@@ -1,0 +1,42 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      # See https://pre-commit.com/hooks.html for more hooks
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: name-tests-test
+      - id: trailing-whitespace
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+    - id: black
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.8.0
+    hooks:
+      - id: bandit
+        args: ['-iii', '-ll']
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        # Not that problematic to run in parallel see Pre-commit
+        # integration in the doc for details
+        # require_serial: true
+        args: ["-rn", "-sn", "--rcfile=.pylintrc", "--fail-on=I"]
+        exclude: tests(/\w*)*/functional/|tests/input|tests(/\w*)*data/|doc/

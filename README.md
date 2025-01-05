@@ -8,18 +8,12 @@ The project incorporates analysis of factors such as:
 - **Competitor Activity**  
 - **Weekend and State Holidays**  
 
-By integrating machine learning techniques and exploratory data analysis, we offer actionable insights into sales dynamics and influential factors.  
-
----
-
 ## Features  
 
 - **Promotion Analysis**: Evaluate the effectiveness of promotional campaigns.  
 - **Competitor Analysis**: Assess the impact of competitor proximity and openings on store performance.  
 - **Customer Behavior Trends**: Explore customer activity during weekends, holidays, and store operational hours.  
 - **Seasonality Insights**: Identify patterns in sales based on weekend.  
-
----
 
 ## Data Description  
 
@@ -33,8 +27,6 @@ The dataset contains the following columns:
 - **CompetitionDistance**: Distance to the nearest competitor store.  
 - **Assortment**: Assortment type ('a', 'b', 'c').  
 - **Promo2**: Whether the store is part of a continuous promotion.  
-
----
 
 ## Methodology  
 
@@ -54,15 +46,11 @@ The dataset contains the following columns:
    - Correlated sales with the proximity and opening of competitors.  
    - Investigated the impact of competition on store performance.    
 
----
-
 ## Key Results  
 
 - **Promotion Effectiveness**: Promotions significantly boosted sales, particularly in stores with extended assortments.  
 - **Competitor Impact**: The presence of nearby competitors slightly reduced sales, though city-center stores were less affected.  
 - **Customer Trends**: Weekend sales were normal like other days, with promotions. 
-
----
 
 ## Installation  
 
@@ -76,15 +64,10 @@ The dataset contains the following columns:
    cd 10xWeek4  
    ```  
 
-
----
-
 ## Usage  
  
 1. **Promotion Insights**: Refer to the `notebooks/tasx_1.ipynb` notebook for insights into promotional effectiveness.  
 2. **Competitor Impact**: Explore the impact of competitor activity using the `notebooks/task_1.ipynb` notebook.  
-
----
 
 ## Contributing  
 

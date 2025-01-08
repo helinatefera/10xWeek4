@@ -1,102 +1,129 @@
-from flask import Flask, request, jsonify, render_template_string
 import torch
 import torch.nn as nn
+from flask import Flask, render_template_string, request
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
-# Define the LSTM model
+# Define the LSTM model class
 class LSTMModel(nn.Module):
-    def __init__(self, input_size=1, hidden_size=50, output_size=1, num_layers=2):
+    def __init__(self, input_size, hidden_size, num_layers, output_size=1):
         super(LSTMModel, self).__init__()
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
-        h_0 = torch.zeros(2, x.size(0), 50)  # Initialize hidden state
-        c_0 = torch.zeros(2, x.size(0), 50)  # Initialize cell state
-
-        out, _ = self.lstm(x, (h_0, c_0))  # LSTM layer
-        out = self.fc(out[:, -1, :])  # Fully connected layer
+        out, _ = self.lstm(x)
+        out = out[:, -1, :]
+        out = self.fc(out)
         return out
 
-# Initialize Flask app
+# Initialize the Flask app
 app = Flask(__name__)
 
-# Load the trained model
-MODEL_PATH = "../sales_prediction_model.pth"
-model = LSTMModel(input_size=1, hidden_size=50, output_size=1, num_layers=2)
-model.load_state_dict(torch.load(MODEL_PATH))
-model.eval()
+# Load the trained model and its weights
+model = LSTMModel(input_size=4, hidden_size=50, num_layers=2)  # Define the architecture
+model.load_state_dict(torch.load('../sales_prediction_model.pth'))  # Load the saved model weights
+model.eval()  # Set the model to evaluation mode
 
-# HTML template embedded as a string
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Prediction</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-        h1 { color: #333; }
-        input { padding: 10px; width: 300px; margin-right: 10px; }
-        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        #result { margin-top: 20px; font-size: 18px; }
-    </style>
-    <script>
-        async function getPrediction() {
-            const features = document.getElementById("features").value;
-            const response = await fetch("/predict", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `features=${features}`
-            });
-            const result = await response.json();
-            const resultDiv = document.getElementById("result");
-            if (result.error) {
-                resultDiv.innerText = `Error: ${result.error}`;
-                resultDiv.style.color = "red";
-            } else {
-                resultDiv.innerText = `Predicted Sales: ${result.prediction}`;
-                resultDiv.style.color = "green";
-            }
-        }
-    </script>
-</head>
-<body>
-    <h1>Sales Prediction</h1>
-    <div>
-        <label for="features">Enter Features (comma-separated):</label>
-        <input type="text" id="features" placeholder="5000,5200,5300">
-        <button onclick="getPrediction()">Predict</button>
-    </div>
-    <div id="result"></div>
-</body>
-</html>
-"""
+# Define the MinMaxScaler
+scaler = MinMaxScaler(feature_range=(-1, 1))
 
-@app.route("/")
+# Sample data for the scaler (you can replace this with your actual dataset)
+sample_data = np.array([[124, 0, 0, 0], [87, 0, 0, 0], [74, 778, 0, 0], [0, 0, 0, 0], [76, 1002, 0, 0]])
+
+# Fit the scaler on the sample data (replace with your actual dataset)
+scaler.fit(sample_data)
+
+# Home route
+@app.route('/')
 def home():
-    return render_template_string(HTML_TEMPLATE)
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sales Prediction</title>
+    </head>
+    <body>
+        <h1>Sales Prediction</h1>
+        <form action="/predict" method="post">
+            <label for="customers">Customers:</label>
+            <input type="text" id="customers" name="customers" required><br><br>
+            
+            <label for="days_to_holiday">Days to Holiday:</label>
+            <input type="text" id="days_to_holiday" name="days_to_holiday" required><br><br>
+            
+            <label for="days_after_holiday">Days after Holiday:</label>
+            <input type="text" id="days_after_holiday" name="days_after_holiday" required><br><br>
+            
+            <label for="is_weekend">Is Weekend (0 or 1):</label>
+            <input type="text" id="is_weekend" name="is_weekend" required><br><br>
+            
+            <input type="submit" value="Predict">
+        </form>
+        
+        {% if prediction %}
+            <h3>Predicted Sales: {{ prediction }}</h3>
+        {% endif %}
+    </body>
+    </html>
+    """)
 
-@app.route("/predict", methods=["POST"])
+# Prediction route
+@app.route('/predict', methods=['POST'])
 def predict():
-    try:
-        # Get input data from form
-        input_data = request.form["features"]
-        input_list = list(map(float, input_data.split(",")))
+    # Get input values from the form
+    customers = float(request.form['customers'])
+    days_to_holiday = float(request.form['days_to_holiday'])
+    days_after_holiday = float(request.form['days_after_holiday'])
+    is_weekend = int(request.form['is_weekend'])
 
-        # Preprocess the input
-        features = np.array(input_list, dtype=np.float32)
-        features = torch.tensor(features).view(1, -1, 1)  # Reshape for LSTM
+    # Normalize the input data
+    input_data = np.array([[customers, is_weekend, days_to_holiday, days_after_holiday]])
+    input_data = scaler.transform(input_data)
 
-        # Make prediction
-        with torch.no_grad():
-            prediction = model(features)
+    # Reshape the input for LSTM [batch_size, seq_length, input_size]
+    input_data = torch.tensor(input_data, dtype=torch.float32).unsqueeze(1)
 
-        return jsonify({"prediction": round(prediction.item(), 2)})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    # Make prediction
+    with torch.no_grad():
+        prediction = model(input_data)
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Get the predicted sales value
+    predicted_sales = prediction.item()
+
+    # Return the result
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sales Prediction</title>
+    </head>
+    <body>
+        <h1>Sales Prediction</h1>
+        <form action="/predict" method="post">
+            <label for="customers">Customers:</label>
+            <input type="text" id="customers" name="customers" required><br><br>
+            
+            <label for="days_to_holiday">Days to Holiday:</label>
+            <input type="text" id="days_to_holiday" name="days_to_holiday" required><br><br>
+            
+            <label for="days_after_holiday">Days after Holiday:</label>
+            <input type="text" id="days_after_holiday" name="days_after_holiday" required><br><br>
+            
+            <label for="is_weekend">Is Weekend (0 or 1):</label>
+            <input type="text" id="is_weekend" name="is_weekend" required><br><br>
+            
+            <input type="submit" value="Predict">
+        </form>
+        
+        <h3>Predicted Sales: {{ predicted_sales }}</h3>
+    </body>
+    </html>
+    """, predicted_sales=predicted_sales)
+
+if __name__ == '__main__':
+    app.run(debug=True)

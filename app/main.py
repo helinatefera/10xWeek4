@@ -44,28 +44,79 @@ def home():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Sales Prediction</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f9;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            .container {
+                background: #ffffff;
+                padding: 20px 40px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                max-width: 500px;
+                width: 100%;
+            }
+            h1 {
+                text-align: center;
+                color: #333;
+            }
+            label {
+                display: block;
+                margin: 15px 0 5px;
+                font-weight: bold;
+            }
+            input[type="text"], input[type="submit"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            input[type="submit"] {
+                background-color: #007BFF;
+                color: white;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            input[type="submit"]:hover {
+                background-color: #0056b3;
+            }
+            h3 {
+                text-align: center;
+                color: #28a745;
+            }
+        </style>
     </head>
     <body>
-        <h1>Sales Prediction</h1>
-        <form action="/predict" method="post">
-            <label for="customers">Customers:</label>
-            <input type="text" id="customers" name="customers" required><br><br>
-            
-            <label for="days_to_holiday">Days to Holiday:</label>
-            <input type="text" id="days_to_holiday" name="days_to_holiday" required><br><br>
-            
-            <label for="days_after_holiday">Days after Holiday:</label>
-            <input type="text" id="days_after_holiday" name="days_after_holiday" required><br><br>
-            
-            <label for="is_weekend">Is Weekend (0 or 1):</label>
-            <input type="text" id="is_weekend" name="is_weekend" required><br><br>
-            
-            <input type="submit" value="Predict">
-        </form>
-        
-        {% if prediction %}
-            <h3>Predicted Sales: {{ prediction }}</h3>
-        {% endif %}
+        <div class="container">
+            <h1>Sales Prediction</h1>
+            <form action="/predict" method="post">
+                <label for="customers">Customers:</label>
+                <input type="text" id="customers" name="customers" required>
+                
+                <label for="days_to_holiday">Days to Holiday:</label>
+                <input type="text" id="days_to_holiday" name="days_to_holiday" required>
+                
+                <label for="days_after_holiday">Days after Holiday:</label>
+                <input type="text" id="days_after_holiday" name="days_after_holiday" required>
+                
+                <label for="is_weekend">Is Weekend (0 or 1):</label>
+                <input type="text" id="is_weekend" name="is_weekend" required>
+                
+                <input type="submit" value="Predict">
+            </form>
+            {% if prediction %}
+                <h3>Predicted Sales: {{ prediction }}</h3>
+            {% endif %}
+        </div>
     </body>
     </html>
     """)
@@ -101,26 +152,77 @@ def predict():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Sales Prediction</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f9;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            .container {
+                background: #ffffff;
+                padding: 20px 40px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                max-width: 500px;
+                width: 100%;
+            }
+            h1 {
+                text-align: center;
+                color: #333;
+            }
+            label {
+                display: block;
+                margin: 15px 0 5px;
+                font-weight: bold;
+            }
+            input[type="text"], input[type="submit"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            input[type="submit"] {
+                background-color: #007BFF;
+                color: white;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            input[type="submit"]:hover {
+                background-color: #0056b3;
+            }
+            h3 {
+                text-align: center;
+                color: #28a745;
+            }
+        </style>
     </head>
     <body>
-        <h1>Sales Prediction</h1>
-        <form action="/predict" method="post">
-            <label for="customers">Customers:</label>
-            <input type="text" id="customers" name="customers" required><br><br>
-            
-            <label for="days_to_holiday">Days to Holiday:</label>
-            <input type="text" id="days_to_holiday" name="days_to_holiday" required><br><br>
-            
-            <label for="days_after_holiday">Days after Holiday:</label>
-            <input type="text" id="days_after_holiday" name="days_after_holiday" required><br><br>
-            
-            <label for="is_weekend">Is Weekend (0 or 1):</label>
-            <input type="text" id="is_weekend" name="is_weekend" required><br><br>
-            
-            <input type="submit" value="Predict">
-        </form>
-        
-        <h3>Predicted Sales: {{ predicted_sales }}</h3>
+        <div class="container">
+            <h1>Sales Prediction</h1>
+            <form action="/predict" method="post">
+                <label for="customers">Customers:</label>
+                <input type="text" id="customers" name="customers" required>
+                
+                <label for="days_to_holiday">Days to Holiday:</label>
+                <input type="text" id="days_to_holiday" name="days_to_holiday" required>
+                
+                <label for="days_after_holiday">Days after Holiday:</label>
+                <input type="text" id="days_after_holiday" name="days_after_holiday" required>
+                
+                <label for="is_weekend">Is Weekend (0 or 1):</label>
+                <input type="text" id="is_weekend" name="is_weekend" required>
+                
+                <input type="submit" value="Predict">
+            </form>
+            <h3>Predicted Sales: {{ predicted_sales }}</h3>
+        </div>
     </body>
     </html>
     """, predicted_sales=predicted_sales)

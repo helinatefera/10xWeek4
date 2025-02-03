@@ -1,6 +1,6 @@
 -r tests.txt
 
-black[jupyter]==24.10.0
+black[jupyter]==25.1.0
 flake8==7.1.1
 isort==5.13.2
 pre_commit==4.0.1
